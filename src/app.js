@@ -10,7 +10,7 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-app.use("/weather/:city", (req, res) => {
+app.get("/weather/:city", (req, res) => {
   const { city } = req.params;
   const config = {
     method: "get",
@@ -23,17 +23,17 @@ app.use("/weather/:city", (req, res) => {
 
   return axios(config)
     .then(response => {
-      console.log(response.data);
       return res.status(200).send(response.data);
     })
     .catch(err => {
-      //   throw err.response.data;
-      console.log(err.response.data);
-
       return res.status(500).send(err.response.data);
     });
 });
-
+app.use("*", function(req, res) {
+    const errorRes = {status: "error"}
+    errorRes.message = "Page not found";
+    res.status(404).send(errorRes);
+  });
 app.listen(process.env.PORT, () => {
   console.log(`Application running on port ${process.env.PORT}`);
 });
